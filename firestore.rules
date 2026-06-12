@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny catch-all safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global validation helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "madhukatta0731@gmail.com" || 
+        request.auth.token.email == "deepika@cakesandcreams.com"
+      );
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // 1. Users Collection Rules
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isSignedIn() && isOwner(userId) && (
+        request.resource.data.role == "customer" // Users cannot self-assign "admin"
+      );
+      allow update: if isOwner(userId) && (
+        request.resource.data.role == resource.data.role && // Cannot escalate own role
+        request.resource.data.uid == resource.data.uid
+      ) || isAdmin();
+    }
+
+    // 2. Orders Collection Rules
+    match /orders/{orderId} {
+      // Admin can read all orders; standard authenticated customers can only list or get their own orders
+      allow read: if isAdmin() || (isSignedIn() && resource.data.customerInfo.email == request.auth.token.email);
+      
+      // Anyone signed in can submit a valid cake order
+      allow create: if isSignedIn() && (
+        request.resource.data.status == "Pending" &&
+        request.resource.data.id == orderId
+      );
+
+      // Only Admin can update the order status. Customers cannot change details once placed!
+      allow update: if isAdmin() && (
+        request.resource.data.id == resource.data.id &&
+        request.resource.data.customerInfo == resource.data.customerInfo
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 3. Queries Collection Rules
+    match /queries/{queryId} {
+      allow read: if isAdmin();
+      allow create: if true; // Any visitor can submit a query request
+      allow update, delete: if isAdmin();
+    }
+
+    // 4. Reviews Collection Rules
+    match /reviews/{reviewId} {
+      // Anyone can read reviews
+      allow read: if true;
+      
+      // Anyone signed in can write reviews
+      allow create: if isSignedIn() && (
+        request.resource.data.approved == true || request.resource.data.approved == false
+      );
+
+      // Only Deepika (Admin) can change reviews moderation status
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+  }
+}
