@@ -17,7 +17,7 @@ import {
 } from 'recharts';
 
 export const AdminDashboard: React.FC = () => {
-  const { orders, queries, reviews, updateOrderStatus, respondToQuery, moderateReview } = useAppState();
+  const { orders, queries, reviews, updateOrderStatus, respondToQuery, moderateReview, showToast } = useAppState();
   const [activeTab, setActiveTab] = useState<'analytics' | 'orders' | 'queries' | 'reviews' | 'cakes'>('analytics');
   
   // Query Reply modal
@@ -424,7 +424,7 @@ export const AdminDashboard: React.FC = () => {
             </div>
             
             <button 
-              onClick={() => alert("Added to Deepika's custom inventory backlog! Catalog management is integrated with Firebase Catalog Collection.")}
+              onClick={() => showToast("Added to Deepika's custom inventory backlog! Catalog integration active.", 'success')}
               className="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-xl transition-colors inline-flex items-center space-x-1"
             >
               <Plus className="w-3.5 h-3.5" />

@@ -1,10 +1,9 @@
 {
-  "projectId": "continual-loop-0s7sz",
-  "appId": "1:230349436686:web:f4ff57034d1bef3109095f",
-  "apiKey": "AIzaSyCspohwafomNMuNwaAMulQz8k_pqTqFJ0U",
-  "authDomain": "continual-loop-0s7sz.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-fb37f789-f233-4252-855d-c054c8156121",
-  "storageBucket": "continual-loop-0s7sz.firebasestorage.app",
-  "messagingSenderId": "230349436686",
-  "measurementId": ""
+  "apiKey": "AIzaSyCjCLRQ84DlyHwFHZZ8Ty92KwmObWZXFns",
+  "authDomain": "bento-c10c4.firebaseapp.com",
+  "projectId": "bento-c10c4",
+  "storageBucket": "bento-c10c4.firebasestorage.app",
+  "messagingSenderId": "199400992898",
+  "appId": "1:199400992898:web:19554076ef8e7e4495c49b",
+  "measurementId": "G-TTBQ9TS18J"
 }

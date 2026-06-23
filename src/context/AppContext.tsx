@@ -47,6 +47,10 @@ interface AppContextType {
   submitReview: (name: string, rating: number, comment: string, cakeName: string) => Promise<void>;
   moderateReview: (reviewId: string, approved: boolean) => Promise<void>;
 
+  // Toast notification state
+  toast: { message: string; type: 'success' | 'info' | 'error' } | null;
+  showToast: (message: string, type?: 'success' | 'info' | 'error') => void;
+
   // Navigation Helper
   setView: (view: 'home' | 'customize' | 'cart' | 'checkout' | 'admin' | 'account' | 'help') => void;
 }
@@ -62,6 +66,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; percent: number } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
+    setToast({ message, type });
+  };
 
   // Live Chat state
   const [activeChatOpen, setActiveChatOpen] = useState(false);
@@ -72,23 +81,49 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Load initial data
   useEffect(() => {
     async function loadData() {
-      const user = await ApiService.getCurrentUser();
-      if (user) {
-        setCurrentUser(user);
-        setWishlist(user.wishlist || []);
+      try {
+        const user = await ApiService.getCurrentUser();
+        if (user) {
+          setCurrentUser(user);
+          setWishlist(user.wishlist || []);
+        }
+      } catch (err) {
+        console.error("Failed to load user profile:", err);
       }
       
-      const dbOrders = await ApiService.getOrders();
-      setOrders(dbOrders);
+      try {
+        const dbOrders = await ApiService.getOrders();
+        setOrders(dbOrders);
+      } catch (err) {
+        console.error("Failed to load orders:", err);
+      }
 
-      const dbQueries = await ApiService.getQueries();
-      setQueries(dbQueries);
+      try {
+        const dbQueries = await ApiService.getQueries();
+        setQueries(dbQueries);
+      } catch (err) {
+        console.error("Failed to load queries:", err);
+      }
 
-      const dbReviews = await ApiService.getReviews();
-      setReviews(dbReviews);
+      try {
+        const dbReviews = await ApiService.getReviews();
+        setReviews(dbReviews);
+      } catch (err) {
+        console.error("Failed to load reviews:", err);
+      }
     }
     loadData();
   }, []);
+
+  // Automatic toast cleanup
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   // Sync state helpers
   const loginUser = async (email: string, name?: string) => {
@@ -115,8 +150,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const toggleWish = async (cakeName: string) => {
     if (!currentUser) {
-      // Prompt logon
-      alert("Please login first to add cakes to your wishlist!");
+      // Prompt logon using nice custom toast instead of browser alert blocking iframe
+      showToast("Please login first to add cakes to your wishlist!", 'info');
       return;
     }
     let updatedWishlist = [...wishlist];
@@ -303,6 +338,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       toggleChatPanel,
       submitReview,
       moderateReview,
+      toast,
+      showToast,
       setView: setCurrentView,
     }}>
       {children}

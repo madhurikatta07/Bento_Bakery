@@ -8,10 +8,10 @@ import { useAppState } from '../context/AppContext';
 import { STANDARD_BAKERY_CAKES } from '../data';
 import { FAQSection } from './FAQSection';
 import { ReviewSection } from './ReviewSection';
-import { Sparkles, ArrowRight, Heart, Star, Sparkle, Tag, Gift, BadgeAlert, Cake } from 'lucide-react';
+import { Sparkles, ArrowRight, Heart, Star, Sparkle, Tag, Gift, BadgeAlert, Cake, LogIn, LogOut } from 'lucide-react';
 
 export const Catalog: React.FC = () => {
-  const { setView, toggleWish, wishlist, addToCart } = useAppState();
+  const { setView, toggleWish, wishlist, addToCart, currentUser, logoutUser, showToast } = useAppState();
 
   const activeVouchers = [
     { code: 'BENTO10', percent: '10%', desc: '10% Off custom designed bento cakes' },
@@ -100,7 +100,7 @@ export const Catalog: React.FC = () => {
                 key={v.code}
                 onClick={() => {
                   navigator.clipboard.writeText(v.code);
-                  alert(`Copied Coupon: "${v.code}". Apply during Oven Cart checkout!`);
+                  showToast(`Copied Coupon: "${v.code}". Apply during Oven Cart checkout!`, 'success');
                 }}
                 className="bg-white px-3.5 py-1.5 border border-dashed border-rose-200 rounded-xl flex items-center space-x-2.5 cursor-pointer hover:border-rose-455 transition-colors"
                 title="Click to copy coupon code"
@@ -113,6 +113,61 @@ export const Catalog: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Hand-crafted dynamic login/logout banner */}
+      {currentUser ? (
+        <section id="auth-catalog-banner" className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl p-6 sm:p-8 border border-amber-200/50 text-gray-800 relative overflow-hidden shadow-sm">
+          <div className="absolute right-0 bottom-0 opacity-10 translate-x-8 translate-y-8 select-none text-9xl">🎂</div>
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-1.5 text-center md:text-left">
+              <span className="bg-[#8E4D3E]/10 text-amber-900 font-bold text-[10px] uppercase tracking-widest px-2.5 py-0.5 rounded-full inline-block leading-none">
+                Welcome Back
+              </span>
+              <h4 className="font-serif text-xl sm:text-2xl font-bold text-gray-800">Greetings, {currentUser.displayName}! <strong className="text-rose-500 font-bold">✨</strong></h4>
+              <p className="text-xs sm:text-sm text-gray-500 max-w-xl">
+                You are signed in as <strong className="text-[#8E4D3E] font-semibold">{currentUser.email}</strong>. Ready to design another sweet Korean bento box?
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2.5 shrink-0 justify-center">
+              <button
+                onClick={() => setView('account')}
+                className="px-5 py-3 bg-[#8E4D3E] hover:bg-[#723B2F] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-sm cursor-pointer leading-none"
+              >
+                Go to My Account
+              </button>
+              <button
+                onClick={logoutUser}
+                className="px-5 py-3 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold text-xs sm:text-sm rounded-xl transition-all shadow-xs flex items-center space-x-1.5 leading-none"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section id="auth-catalog-banner" className="bg-gradient-to-r from-rose-500 to-pink-500 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-md">
+          <div className="absolute right-0 bottom-0 opacity-10 translate-x-12 translate-y-12 select-none text-9xl">🧁</div>
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-1 text-center md:text-left">
+              <span className="bg-white/20 text-white font-bold text-[10px] uppercase tracking-widest px-2.5 py-0.5 rounded-full inline-block leading-none">
+                Baking Member Club
+              </span>
+              <h4 className="font-serif text-xl sm:text-2xl font-bold tracking-tight">Join Cakes &amp; Creams as a Sweet Member!</h4>
+              <p className="text-xs sm:text-sm text-pink-100 max-w-xl">
+                Create an account instantly using your name &amp; email to log custom orders, save shipping address binders, and bookmark bento designs to your personal wishlist!
+              </p>
+            </div>
+            <button
+              onClick={() => setView('account')}
+              className="px-6 py-3.5 bg-white hover:bg-rose-50 text-rose-600 font-bold text-xs sm:text-sm rounded-xl shrink-0 transition-all shadow-md active:scale-95 cursor-pointer leading-none flex items-center justify-center space-x-2"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>Login or Sign Up</span>
+            </button>
+          </div>
+        </section>
+      )}
 
       {/* Featured Menu Grid */}
       <section id="featured-menu" className="scroll-mt-24 space-y-8">

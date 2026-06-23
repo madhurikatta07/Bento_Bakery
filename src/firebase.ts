@@ -160,7 +160,7 @@ export const ApiService = {
         });
         return ordersList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       } catch (err) {
-        handleFirestoreError(err, OperationType.LIST, 'orders');
+        console.warn("Firestore error reading orders, falling back to localStorage:", err);
       }
     }
 
@@ -217,7 +217,7 @@ export const ApiService = {
         });
         return qsList.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       } catch (err) {
-        handleFirestoreError(err, OperationType.LIST, 'queries');
+        console.warn("Firestore error reading queries, falling back to localStorage:", err);
       }
     }
 
@@ -286,7 +286,7 @@ export const ApiService = {
         });
         return revs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       } catch (err) {
-        handleFirestoreError(err, OperationType.LIST, 'reviews');
+        console.warn("Firestore error reading reviews, falling back to localStorage:", err);
       }
     }
 

@@ -16,7 +16,7 @@ import { InquiryForm } from './components/InquiryForm';
 import { Mail, MessageSquare, MessageCircle, X, Send } from 'lucide-react';
 
 function BaseLayout() {
-  const { currentView, activeChatOpen, toggleChatPanel, sendChatMessage, chatMessages } = useAppState();
+  const { currentView, activeChatOpen, toggleChatPanel, sendChatMessage, chatMessages, toast, showToast } = useAppState();
   const [chatInputValue, setChatInputValue] = useState('');
 
   const renderActiveView = () => {
@@ -50,6 +50,27 @@ function BaseLayout() {
   return (
     <div className="min-h-screen bg-[#FFFDF9] flex flex-col font-sans selection:bg-rose-100 selection:text-rose-800">
       
+      {/* Dynamic Custom Premium Toast Notification */}
+      {toast && (
+        <div id="custom-app-toast" className="fixed top-24 right-4 sm:right-6 z-50 animate-slide-in max-w-sm w-[90%] sm:w-auto">
+          <div className={`p-4 rounded-2xl shadow-xl border flex items-center space-x-3.5 backdrop-blur-md ${
+            toast.type === 'success' 
+              ? 'bg-emerald-50/95 border-emerald-100 text-emerald-800' 
+              : toast.type === 'error'
+              ? 'bg-rose-50/95 border-rose-100 text-rose-800'
+              : 'bg-amber-50/95 border-amber-100 text-amber-800'
+          }`}>
+            <span className="text-xl">
+              {toast.type === 'success' ? '✨' : toast.type === 'error' ? '🚫' : '💡'}
+            </span>
+            <div className="flex-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider opacity-60">Notification</p>
+              <p className="text-xs sm:text-sm font-semibold mt-0.5">{toast.message}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Visual background textures */}
       <div className="fixed top-0 left-0 right-0 h-96 bg-gradient-to-b from-[#FFF0E6]/30 to-transparent pointer-events-none z-0" />
       
@@ -77,7 +98,7 @@ function BaseLayout() {
             <span>&bull;</span>
             <span>Allergen Warning: Gluten &amp; Dairy</span>
             <span>&bull;</span>
-            <span className="text-rose-500 font-bold hover:underline cursor-pointer" onClick={() => alert("Deepika's bakery is 100% certified with fully temperature-controlled local dispatch networks!")}>Safety Shield Verified</span>
+            <span className="text-rose-500 font-bold hover:underline cursor-pointer" onClick={() => showToast("Deepika's bakery is 100% certified with fully temperature-controlled local dispatch networks!", 'success')}>Safety Shield Verified</span>
           </div>
         </div>
       </footer>
@@ -157,7 +178,7 @@ function BaseLayout() {
 
           {/* WhatsApp redirect */}
           <button
-            onClick={() => alert("Connecting to Deepika's WhatsApp coordinate channel on 555-CAKE-SWEET!")}
+            onClick={() => showToast("Connecting to Deepika's WhatsApp channel on 555-CAKE-SWEET!", 'info')}
             className="p-3.5 bg-[#25D366] text-white rounded-full shadow-lg transition-transform hover:scale-105"
             title="Text on WhatsApp"
           >

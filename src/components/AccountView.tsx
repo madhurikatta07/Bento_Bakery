@@ -6,11 +6,12 @@
 import React, { useState } from 'react';
 import { useAppState } from '../context/AppContext';
 import { STANDARD_BAKERY_CAKES } from '../data';
-import { User, Heart, MapPin, ListOrdered, Calendar, Archive, Trash2, Key, ShoppingCart, Info, LogIn } from 'lucide-react';
+import { User, Heart, MapPin, ListOrdered, Calendar, Archive, Trash2, Key, ShoppingCart, Info, LogIn, LogOut } from 'lucide-react';
 
 export const AccountView: React.FC = () => {
-  const { currentUser, orders, wishlist, toggleWish, addToCart, setView, loginUser } = useAppState();
+  const { currentUser, orders, wishlist, toggleWish, addToCart, setView, loginUser, logoutUser } = useAppState();
   const [toggleLoginInput, setToggleLoginInput] = useState('');
+  const [nameInput, setNameInput] = useState('');
   
   // New address state helper
   const [newStreet, setNewStreet] = useState('');
@@ -21,8 +22,13 @@ export const AccountView: React.FC = () => {
   const handleLocalLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!toggleLoginInput.trim()) return;
-    await loginUser(toggleLoginInput);
+    await loginUser(toggleLoginInput, nameInput.trim() || 'Cute Baker');
     setToggleLoginInput('');
+    setNameInput('');
+  };
+
+  const handleQuickFill = async (email: string, name: string) => {
+    await loginUser(email, name);
   };
 
   const handleAddWishToCart = (cakeName: string) => {
@@ -76,7 +82,7 @@ export const AccountView: React.FC = () => {
   // If user not signed in, show a cute login gateway
   if (!currentUser) {
     return (
-      <div className="max-w-md mx-auto py-16 px-4 bg-white rounded-3xl border border-rose-100/40 shadow-xs text-center space-y-5">
+      <div className="max-w-md mx-auto py-12 px-6 sm:px-8 bg-white rounded-3xl border border-rose-100/40 shadow-md text-center space-y-6">
         <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto text-pink-500 animate-bounce">
           <User className="w-8 h-8" />
         </div>
@@ -88,14 +94,25 @@ export const AccountView: React.FC = () => {
           </p>
         </div>
 
-        <form onSubmit={handleLocalLogin} className="space-y-3.5 pt-2 text-left">
+        <form onSubmit={handleLocalLogin} className="space-y-4 text-left">
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Your Email Address</label>
+            <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1">Your Lovely Name</label>
+            <input
+              type="text"
+              placeholder="e.g. Deepika"
+              className="w-full px-4 py-2.5 border border-pink-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 text-xs sm:text-sm text-gray-800 focus:border-rose-400"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-gray-500 uppercase mb-1">Your Email Address <span className="text-pink-500">*</span></label>
             <input
               type="email"
               required
               placeholder="e.g. deepika@cakesandcreams.com"
-              className="w-full px-4 py-2.5 border border-pink-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 text-xs sm:text-sm text-gray-800"
+              className="w-full px-4 py-2.5 border border-pink-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 text-xs sm:text-sm text-gray-800 focus:border-rose-400"
               value={toggleLoginInput}
               onChange={(e) => setToggleLoginInput(e.target.value)}
             />
@@ -103,12 +120,32 @@ export const AccountView: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl flex items-center justify-center space-x-1 cursor-pointer"
+            className="w-full py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs sm:text-sm rounded-xl flex items-center justify-center space-x-2 cursor-pointer transition-all shadow-sm active:scale-95"
           >
             <LogIn className="w-4 h-4" />
             <span>Enter Studio Portal</span>
           </button>
         </form>
+
+        <div className="pt-2 border-t border-gray-100 space-y-2">
+          <p className="text-[10px] text-gray-400 font-bold block text-left uppercase tracking-wider text-center">Quick Connect Options</p>
+          <div className="grid grid-cols-1 gap-2">
+            <button
+              onClick={() => handleQuickFill('customer@cakesandcreams.com', 'Sweet Customizer')}
+              className="px-3.5 py-2 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-xl text-left flex items-center justify-between border border-rose-100"
+            >
+              <span>Connect Customer Sandbox</span>
+              <span className="text-[9px] bg-white px-2 py-0.5 rounded border border-rose-100 font-bold">Quick Fill</span>
+            </button>
+            <button
+              onClick={() => handleQuickFill('madhukatta0731@gmail.com', 'Deepika Admin')}
+              className="px-3.5 py-2 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100/80 rounded-xl text-left flex items-center justify-between border border-amber-100"
+            >
+              <span>Connect Admin Portal (Madhukatta)</span>
+              <span className="text-[9px] bg-white px-2 py-0.5 rounded border border-amber-100 font-bold">Admin Live</span>
+            </button>
+          </div>
+        </div>
 
         <div className="p-3 bg-rose-50/50 rounded-xl border border-rose-100 text-[10px] text-rose-700 leading-snug text-left select-none">
           💡 Want to see दीपिका's (Deepika) management terminal? Back and sign in as <strong className="font-black text-rose-600">madhukatta0731@gmail.com</strong> of Cakes &amp; Creams!
@@ -135,14 +172,24 @@ export const AccountView: React.FC = () => {
           </div>
         </div>
 
-        {currentUser.role === 'admin' && (
+        <div className="flex flex-wrap gap-2.5">
+          {currentUser.role === 'admin' && (
+            <button
+              onClick={() => setView('admin')}
+              className="px-5 py-2.5 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition-colors shadow-xs"
+            >
+              Enter Deepika Admin Dashboard
+            </button>
+          )}
+
           <button
-            onClick={() => setView('admin')}
-            className="px-5 py-2.5 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl transition-colors shadow-xs"
+            onClick={logoutUser}
+            className="px-5 py-2.5 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold text-xs rounded-xl transition-colors shadow-xs flex items-center space-x-1.5"
           >
-            Enter Deepika Admin Dashboard
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign Out / Log Out</span>
           </button>
-        )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

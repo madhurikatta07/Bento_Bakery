@@ -121,26 +121,27 @@ export const Navbar: React.FC = () => {
 
               {/* Auth user action */}
               {currentUser ? (
-                <div className="flex items-center space-x-2 pl-2 border-l border-rose-100">
+                <div className="flex items-center space-x-3.5 pl-3 border-l border-rose-100">
                   <button
                     onClick={() => setView('account')}
-                    className="flex items-center space-x-1.5 text-sm font-medium text-gray-700 hover:text-rose-600 transition-colors"
+                    className="flex items-center space-x-1.5 text-sm font-semibold text-gray-750 hover:text-rose-600 transition-colors"
                   >
-                    <User className="w-4 h-4 text-rose-400" />
+                    <User className="w-4 h-4 text-rose-500" />
                     <span className="max-w-[100px] truncate">{currentUser.displayName}</span>
                   </button>
                   <button
                     onClick={logoutUser}
-                    className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors"
+                    className="flex items-center space-x-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-full font-bold text-xs transition-colors border border-rose-100/50"
                     title="Sign Out"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Log Out</span>
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowLoginModal(true)}
-                  className="flex items-center space-x-1.5 px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-sm font-medium transition-colors shadow-sm"
+                  className="flex items-center space-x-1.5 px-4.5 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-sm font-semibold transition-colors shadow-sm"
                 >
                   <User className="w-4 h-4" />
                   <span>Join / Login</span>

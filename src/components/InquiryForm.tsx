@@ -8,7 +8,7 @@ import { useAppState } from '../context/AppContext';
 import { Mail, Phone, MessageCircle, Send, Check, Heart, Shield, HelpCircle, MessageSquare, Coffee, X } from 'lucide-react';
 
 export const InquiryForm: React.FC = () => {
-  const { sendQuery, activeChatOpen, toggleChatPanel, sendChatMessage, chatMessages } = useAppState();
+  const { sendQuery, activeChatOpen, toggleChatPanel, sendChatMessage, chatMessages, showToast } = useAppState();
 
   // Contact form
   const [name, setName] = useState('');
@@ -81,7 +81,7 @@ export const InquiryForm: React.FC = () => {
               </a>
               <button 
                 type="button"
-                onClick={() => alert("Connecting to Deepika's WhatsApp dispatch channel at real 555-CAKE-SWEET. (Demo channel open next door!)")}
+                onClick={() => showToast("Connecting to Deepika's WhatsApp channel at 555-CAKE-SWEET. (Demo channel open next door!)", 'info')}
                 className="px-3 py-1.5 bg-[#25D366] text-white hover:brightness-105 text-[11px] font-bold rounded-lg inline-flex items-center space-x-1 shadow-xs"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
@@ -299,7 +299,7 @@ export const InquiryForm: React.FC = () => {
 
           {/* WhatsApp Support Tooltip Bubble */}
           <button
-            onClick={() => alert("Connecting to Deepika's WhatsApp Support Line on 555-CAKE-SWEET!")}
+            onClick={() => showToast("Connecting to Deepika's WhatsApp Support Line on 555-CAKE-SWEET!", 'info')}
             className="p-3.5 bg-[#25D366] text-white rounded-full shadow-lg transition-transform hover:scale-105"
             title="WhatsApp Deepika"
           >
